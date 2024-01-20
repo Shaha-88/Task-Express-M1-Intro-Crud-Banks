@@ -1,5 +1,5 @@
 const express = require("express");
-const accounts = require("./accounts");
+let accounts = require("./accounts");
 const app = express();
 app.use(express.json());
 
@@ -20,31 +20,24 @@ app.post("/api/accounts", (req, res) => {
 
 app.delete("/api/accounts/:id", (req, res) => {
     const id =req.params.id;
-  const account = accounts.find((accounts) => {
-    return accounts.id == id;
-  });
+  accounts =accounts.filter((account)=>{
+    return account.id !=id;
+  })
+  return res.status(200).json(accounts);
 
-  if (!accounts) {
-    return res.status(404).json({ message: "not found" });
-  }
-
-  return res.status(200).json(
-    accounts.filter((accounts) => {
-      return accounts.id !== id;
-    })
-  );
 });
 
 app.put("/api/accounts/:id"),
   (req, res) => {
     const id = req.params.id;
-    const accounts = accounts.find((accounts) => {
-      return accounts.id == id;
+    const {username,funds}=req.body;
+    const account = accounts.find((account) => {
+      return account.id == id;
     });
-    if (!accounts) return res.status(404).json({ massage: "not found" });
-
-return res.status(200).json(accounts);
-
+    if (!account) return res.status(404).json({ massage: "not found" });
+account.username = username ? username : account.username;
+account.funds = funds ? funds : account.funds;
+return res.status(200).json(account);
   };
 
 const PORT = 8002;
